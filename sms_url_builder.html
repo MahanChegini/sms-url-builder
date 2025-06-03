@@ -1,79 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>سازنده URL انتقال پیامک</title>
+  <meta charset="UTF-8" />
+  <title>سازنده URL انتقال پیامک - SMS.ir</title>
   <style>
-    body {
-      font-family: Vazirmatn, sans-serif;
-      background: #f5f5f5;
-      padding: 2rem;
-      direction: rtl;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-      border-radius: 16px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
-    input[type=text] {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #0d6efd;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .output {
-      background: #f0f0f0;
-      padding: 1rem;
-      border-radius: 8px;
-      word-break: break-all;
-    }
+    body { font-family: Tahoma, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f8f9fa; }
+    h1 { color: #2c3e50; }
+    label { display: block; margin: 8px 0; }
+    input[type="text"] { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    button { margin-top: 12px; padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    #result { margin-top: 16px; background: #e9ecef; padding: 10px; word-break: break-all; border-radius: 4px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>سازنده URL انتقال پیامک دریافتی</h2>
-    <label>آدرس فایل PHP خود را وارد کنید (مثلاً: sirius.ir/test.php)</label>
-    <input type="text" id="pathInput" placeholder="مثلاً: sirius.ir/test.php">
-    <button onclick="generateUrl()">ساخت URL</button>
+  <h1>سازنده URL انتقال پیامک - SMS.ir</h1>
+  <p>لینک انتقال پیامک دریافتی را به‌دلخواه با انتخاب متغیرها بسازید.</p>
 
-    <div id="resultBox" style="display:none;margin-top:1.5rem">
-      <h3>🔗 آدرس نهایی:</h3>
-      <div class="output" id="output"></div>
-      <button onclick="copyOutput()">کپی کردن</button>
-    </div>
-  </div>
+  <label>
+    آدرس سایت (بدون اسلش آخر):
+    <input type="text" id="baseUrl" value="https://SMS.ir" />
+  </label>
+
+  <fieldset>
+    <legend>انتخاب متغیرها:</legend>
+    <label><input type="checkbox" id="varFrom" checked /> from (فرستنده پیامک)</label>
+    <label><input type="checkbox" id="varTo" checked /> to (گیرنده پیامک)</label>
+    <label><input type="checkbox" id="varText" checked /> text (متن پیامک)</label>
+    <label><input type="checkbox" id="varDate" checked /> date (تاریخ و زمان)</label>
+  </fieldset>
+
+  <button onclick="buildUrl()">ساخت لینک</button>
+
+  <div id="result"></div>
 
   <script>
-    function generateUrl() {
-      const input = document.getElementById('pathInput').value.trim();
-      if (!input) return alert("لطفاً آدرس وارد کنید.");
-      const prefix = input.startsWith("http") ? input : "https://" + input;
-      const fullUrl = `${prefix}?from=$FROM$&to=$TO$&text=$TEXT$&date=$DATETIME$`;
-      document.getElementById('output').textContent = fullUrl;
-      document.getElementById('resultBox').style.display = 'block';
-    }
+    function buildUrl() {
+      const baseUrl = document.getElementById('baseUrl').value.trim().replace(/\/$/, '');
+      const params = [];
 
-    function copyOutput() {
-      const text = document.getElementById('output').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("کپی شد ✅");
-      });
+      if(document.getElementById('varFrom').checked) params.push('from=$FROM$');
+      if(document.getElementById('varTo').checked) params.push('to=$TO$');
+      if(document.getElementById('varText').checked) params.push('text=$TEXT$');
+      if(document.getElementById('varDate').checked) params.push('date=$DATETIME$');
+
+      if(params.length === 0) {
+        document.getElementById('result').textContent = 'حداقل یک متغیر را انتخاب کنید.';
+        return;
+      }
+
+      const url = `${baseUrl}?${params.join('&')}`;
+      document.getElementById('result').textContent = url;
     }
   </script>
 </body>
