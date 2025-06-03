@@ -4,35 +4,137 @@
   <meta charset="UTF-8" />
   <title>سازنده URL انتقال پیامک - SMS.ir</title>
   <style>
-    body { font-family: Tahoma, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f8f9fa; }
-    h1 { color: #2c3e50; }
-    label { display: block; margin: 8px 0; }
-    input[type="text"] { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
-    button { margin-top: 12px; padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    #result { margin-top: 16px; background: #e9ecef; padding: 10px; word-break: break-all; border-radius: 4px; }
+    /* Reset و فونت */
+    * {
+      box-sizing: border-box;
+      font-family: 'Vazir', Tahoma, sans-serif;
+    }
+    body {
+      background: #f0f4f8;
+      padding: 30px 15px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      align-items: center;
+      color: #2c3e50;
+    }
+    .container {
+      background: white;
+      padding: 30px 35px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #007bff;
+      letter-spacing: 1.2px;
+    }
+    p {
+      text-align: center;
+      color: #555;
+      margin-bottom: 25px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 14.5px;
+      color: #34495e;
+      cursor: pointer;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.8px solid #ced4da;
+      border-radius: 7px;
+      font-size: 15px;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 6px #007bff55;
+    }
+    fieldset {
+      border: 1.5px solid #ced4da;
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      background: #f9fafb;
+    }
+    legend {
+      padding: 0 8px;
+      font-weight: 700;
+      color: #007bff;
+      font-size: 16px;
+    }
+    input[type="checkbox"] {
+      margin-left: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    button {
+      width: 100%;
+      padding: 13px 0;
+      background: #007bff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 5px 15px #007bff88;
+      user-select: none;
+    }
+    button:hover {
+      background: #0056b3;
+      box-shadow: 0 8px 20px #0056b388;
+    }
+    #result {
+      margin-top: 22px;
+      padding: 16px;
+      background: #e9f1ff;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #003366;
+      word-break: break-word;
+      user-select: all;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
-  <h1>سازنده انتقال پیامک‌های دریافتی - SMS.ir</h1>
-  <p>لینک انتقال پیامک دریافتی را به‌دلخواه با انتخاب متغیرها بسازید.</p>
+  <div class="container">
+    <h1>سازنده انتقال پیامک‌های دریافتی در سامانه - SMS.ir</h1>
+    <p>لینک انتقال پیامک دریافتی را به‌دلخواه با انتخاب متغیرها بسازید.</p>
 
-  <label>
-    آدرس سایت شما (مثال):
-    <input type="text" id="baseUrl" value="https://SMS.ir" />
-  </label>
+    <label for="baseUrl">آدرس سایت (بدون اسلش آخر):</label>
+    <input type="text" id="baseUrl" value="https://SMS.ir/transfer.php" />
 
-  <fieldset>
-    <legend>انتخاب متغیرها:</legend>
-    <label><input type="checkbox" id="varFrom" checked /> from (فرستنده پیامک)</label>
-    <label><input type="checkbox" id="varTo" checked /> to (گیرنده پیامک)</label>
-    <label><input type="checkbox" id="varText" checked /> text (متن پیامک)</label>
-    <label><input type="checkbox" id="varDate" checked /> date (تاریخ و زمان)</label>
-  </fieldset>
+    <fieldset>
+      <legend>انتخاب متغیرها:</legend>
+      <label><input type="checkbox" id="varFrom" checked /> from (فرستنده پیامک)</label>
+      <label><input type="checkbox" id="varTo" checked /> to (گیرنده پیامک)</label>
+      <label><input type="checkbox" id="varText" checked /> text (متن پیامک)</label>
+      <label><input type="checkbox" id="varDate" checked /> date (تاریخ و زمان)</label>
+    </fieldset>
 
-  <button onclick="buildUrl()">ساخت لینک</button>
+    <button onclick="buildUrl()">ساخت لینک</button>
 
-  <div id="result"></div>
+    <div id="result" title="برای کپی کلیک کنید" onclick="copyToClipboard()"></div>
+  </div>
 
   <script>
     function buildUrl() {
@@ -44,14 +146,30 @@
       if(document.getElementById('varText').checked) params.push('text=$TEXT$');
       if(document.getElementById('varDate').checked) params.push('date=$DATETIME$');
 
+      const resultDiv = document.getElementById('result');
+
       if(params.length === 0) {
-        document.getElementById('result').textContent = 'حداقل یک متغیر را انتخاب کنید.';
+        resultDiv.textContent = 'حداقل یک متغیر را انتخاب کنید.';
+        resultDiv.style.color = '#d9534f';
         return;
       }
 
       const url = `${baseUrl}?${params.join('&')}`;
-      document.getElementById('result').textContent = url;
+      resultDiv.textContent = url;
+      resultDiv.style.color = '#003366';
     }
+
+    function copyToClipboard() {
+      const text = document.getElementById('result').textContent;
+      if(text && !text.startsWith('حداقل')) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('لینک کپی شد!');
+        });
+      }
+    }
+
+    // ساخت لینک اولیه وقتی صفحه بارگذاری شد
+    window.onload = buildUrl;
   </script>
 </body>
 </html>
