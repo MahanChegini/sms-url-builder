@@ -59,10 +59,15 @@
       font-size: 14px;
     }
 
-    input[type="text"] {
-      padding: 10px;
+    .input-wrapper {
+      position: relative;
       width: 100%;
       max-width: 400px;
+    }
+
+    input[type="text"] {
+      padding: 10px 36px 10px 10px;
+      width: 100%;
       border: none;
       border-radius: 10px;
       font-size: 14px;
@@ -142,6 +147,15 @@
     #shareButton {
       margin-top: 10px;
     }
+
+    .domain-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -150,7 +164,10 @@
   <h1>ساخت لینک انتقال دریافتی SMS.ir</h1>
 
   <label for="domain">دامنه یا لینک شما (مثال: SMS.ir):</label>
-  <input type="text" id="domain" placeholder="مثلاً: SMS.ir"/>
+  <div class="input-wrapper">
+    <input type="text" id="domain" placeholder="مثلاً: SMS.ir"/>
+    <span id="domainIcon" class="domain-icon"></span>
+  </div>
 
   <div class="checkboxes">
     <div class="checkbox-item">
@@ -180,7 +197,6 @@
     📋 کپی لینک
   </button>
 
-  <!-- دکمه اشتراک‌گذاری اینجا خارج از result قرار می‌گیرد -->
   <button id="shareButton" class="btn" style="display:none;"></button>
 
   <div id="copyMessage" style="margin-top: 0.5rem; color: var(--highlight);"></div>
@@ -194,32 +210,19 @@
     const copyBtn = document.getElementById("copyButton");
     const copyMsg = document.getElementById("copyMessage");
     const shareBtn = document.getElementById("shareButton");
+    const icon = document.getElementById("domainIcon");
 
     errorEl.textContent = "";
     resultEl.style.display = "none";
     copyBtn.style.display = "none";
     shareBtn.style.display = "none";
     copyMsg.textContent = "";
+    icon.textContent = "";
 
-    // بررسی ساختار دامنه با RegEx
     const domainPattern = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,}$/;
     const isValidDomain = domainPattern.test(domain);
 
-    // افزودن یا حذف آیکون وضعیت اعتبار
-    domainInput.style.paddingRight = "2rem";
-    const existingIcon = document.getElementById("domainIcon");
-    if (existingIcon) existingIcon.remove();
-
-    const icon = document.createElement("span");
-    icon.id = "domainIcon";
-    icon.textContent = isValidDomain ? "✅" : "❌";
-    icon.style.position = "absolute";
-    icon.style.right = "12px";
-    icon.style.top = "52px";
-    icon.style.fontSize = "18px";
-    icon.style.pointerEvents = "none";
-    domainInput.parentElement.style.position = "relative";
-    domainInput.parentElement.appendChild(icon);
+    icon.textContent = domain ? (isValidDomain ? "✅" : "❌") : "";
 
     if (!domain) {
       errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
@@ -248,7 +251,6 @@
     resultEl.textContent = fullURL;
     resultEl.style.display = "block";
 
-    // دکمه کپی
     copyBtn.style.display = "inline-block";
     copyBtn.onclick = () => {
       navigator.clipboard.writeText(fullURL).then(() => {
@@ -257,7 +259,6 @@
       });
     };
 
-    // اشتراک‌گذاری موبایلی
     if (navigator.share) {
       shareBtn.style.display = "inline-block";
       shareBtn.textContent = "📤 اشتراک‌گذاری";
