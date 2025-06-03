@@ -128,44 +128,58 @@
 </button>
 <div id="copyMessage" style="margin-top: 0.5rem; color: #f7bd60;"></div>
   <script>
-    function generateLink() {
-      const domain = document.getElementById("domain").value.trim();
-      const errorEl = document.getElementById("error");
-      const resultEl = document.getElementById("result");
-      errorEl.textContent = "";
-      resultEl.style.display = "none";
+  function generateLink() {
+    const domain = document.getElementById("domain").value.trim();
+    const errorEl = document.getElementById("error");
+    const resultEl = document.getElementById("result");
+    const copyBtn = document.getElementById("copyButton");
+    const copyMsg = document.getElementById("copyMessage");
 
-      if (!domain) {
-        errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
-        return;
-      }
+    // پاک کردن خطا و خروجی قبلی
+    errorEl.textContent = "";
+    resultEl.style.display = "none";
+    copyBtn.style.display = "none";
+    copyMsg.textContent = "";
 
-      const params = [];
-      if (document.getElementById("from").checked) params.push("from=$FROM$");
-      if (document.getElementById("to").checked) params.push("to=$TO$");
-      if (document.getElementById("text").checked) params.push("text=$TEXT$");
-      if (document.getElementById("date").checked) params.push("date=$DATETIME$");
-
-      if (params.length === 0) {
-        errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
-        return;
-      }
-
-      const query = params.join("&");
-      const fullURL = `https://${domain}?${query}`;
-document.getElementById("copyButton").style.display = "inline-block";
-
-document.getElementById("copyButton").onclick = () => {
-  navigator.clipboard.writeText(fullURL).then(() => {
-    document.getElementById("copyMessage").textContent = "✅ لینک با موفقیت کپی شد!";
-    setTimeout(() => {
-      document.getElementById("copyMessage").textContent = "";
-    }, 3000);
-  });
-};
-      resultEl.textContent = fullURL;
-      resultEl.style.display = "block";
+    // بررسی اینکه دامنه وارد شده باشد
+    if (!domain) {
+      errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
+      return;
     }
-  </script>
+
+    // جمع‌آوری پارامترهای انتخاب شده
+    const params = [];
+    if (document.getElementById("from").checked) params.push("from=$FROM$");
+    if (document.getElementById("to").checked) params.push("to=$TO$");
+    if (document.getElementById("text").checked) params.push("text=$TEXT$");
+    if (document.getElementById("date").checked) params.push("date=$DATETIME$");
+
+    // اگر هیچ چک‌باکسی انتخاب نشده باشد، خطا بده
+    if (params.length === 0) {
+      errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
+      return;
+    }
+
+    // ساخت رشته کوئری
+    const query = params.join("&");
+    // ساخت URL کامل
+    const fullURL = `https://${domain}?${query}`;
+
+    // نمایش لینک ساخته شده
+    resultEl.textContent = fullURL;
+    resultEl.style.display = "block";
+
+    // نمایش دکمه کپی و اختصاص عملکرد به آن
+    copyBtn.style.display = "inline-block";
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(fullURL).then(() => {
+        copyMsg.textContent = "✅ لینک با موفقیت کپی شد!";
+        setTimeout(() => {
+          copyMsg.textContent = "";
+        }, 3000);
+      });
+    };
+  }
+</script>
 </body>
 </html>
