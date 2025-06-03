@@ -115,6 +115,8 @@
       border-radius: 10px;
       word-break: break-word;
       max-width: 500px;
+      white-space: nowrap;
+      overflow-x: auto;
     }
 
     .error {
@@ -134,6 +136,10 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+    }
+
+    #shareButton {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -172,6 +178,10 @@
   <button id="copyButton" style="display:none; margin-top: 1rem; padding: 10px 20px; background-color: var(--highlight); color: var(--bg); border: none; border-radius: 8px; cursor: pointer;">
     📋 کپی لینک
   </button>
+
+  <!-- دکمه اشتراک‌گذاری اینجا خارج از result قرار می‌گیرد -->
+  <button id="shareButton" class="btn" style="display:none;"></button>
+
   <div id="copyMessage" style="margin-top: 0.5rem; color: var(--highlight);"></div>
 
   <script>
@@ -182,10 +192,12 @@
     const resultEl = document.getElementById("result");
     const copyBtn = document.getElementById("copyButton");
     const copyMsg = document.getElementById("copyMessage");
+    const shareBtn = document.getElementById("shareButton");
 
     errorEl.textContent = "";
     resultEl.style.display = "none";
     copyBtn.style.display = "none";
+    shareBtn.style.display = "none";
     copyMsg.textContent = "";
 
     // بررسی ساختار دامنه با RegEx
@@ -246,10 +258,8 @@
 
     // اشتراک‌گذاری موبایلی
     if (navigator.share) {
-      const shareBtn = document.createElement("button");
+      shareBtn.style.display = "inline-block";
       shareBtn.textContent = "📤 اشتراک‌گذاری";
-      shareBtn.className = "btn";
-      shareBtn.style.marginTop = "10px";
       shareBtn.onclick = () => {
         navigator.share({
           title: "لینک انتقال دریافتی",
@@ -257,7 +267,6 @@
           url: fullURL,
         });
       };
-      resultEl.appendChild(shareBtn);
     }
   }
 
@@ -266,6 +275,6 @@
     const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
   }
-</script>
+  </script>
 </body>
 </html>
