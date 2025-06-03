@@ -122,7 +122,11 @@
 
   <div id="error" class="error"></div>
   <div id="result" class="result" style="display: none;"></div>
-
+<!-- دکمه کپی و پیام موفقیت -->
+<button id="copyButton" style="display:none; margin-top: 1rem; padding: 10px 20px; background-color: #f7bd60; color: #131a29; border: none; border-radius: 8px; cursor: pointer;">
+  📋 کپی لینک
+</button>
+<div id="copyMessage" style="margin-top: 0.5rem; color: #f7bd60;"></div>
   <script>
     function generateURL() {
       const domain = document.getElementById("domain").value.trim();
@@ -149,7 +153,16 @@
 
       const query = params.join("&");
       const fullURL = `https://${domain}?${query}`;
+document.getElementById("copyButton").style.display = "inline-block";
 
+document.getElementById("copyButton").onclick = () => {
+  navigator.clipboard.writeText(fullURL).then(() => {
+    document.getElementById("copyMessage").textContent = "✅ لینک با موفقیت کپی شد!";
+    setTimeout(() => {
+      document.getElementById("copyMessage").textContent = "";
+    }, 3000);
+  });
+};
       resultEl.textContent = fullURL;
       resultEl.style.display = "block";
     }
