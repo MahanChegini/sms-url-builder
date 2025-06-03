@@ -12,25 +12,21 @@
     font-weight: 400;
     font-style: normal;
   }
-  /* ریسپانسیو بودن فونت برای مرورگرها */
   body, input, button {
     font-family: 'Yekan Bakh', 'Yekan Bakh farsi', sans-serif !important;
   }
-
-  /* رنگ‌ها از برندبوک */
   :root {
     --dark-navy: #131a29;
     --gold-yellow: #f7bd60;
     --pure-white: #ffffff;
+    --error-red: #f95f62;
+    --error-bg: #431e22;
   }
-
-  /* Reset */
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
-
   body {
     background-color: var(--dark-navy);
     color: var(--pure-white);
@@ -41,7 +37,6 @@
     padding: 25px;
     user-select: none;
   }
-
   .container {
     background: linear-gradient(145deg, #1a2236, #101622);
     border-radius: 24px;
@@ -53,7 +48,6 @@
       inset 0 0 10px rgba(247, 189, 96, 0.15);
     text-align: center;
   }
-
   h1 {
     font-weight: 900;
     font-size: 2.6rem;
@@ -63,7 +57,6 @@
     text-shadow: 0 0 12px #f7bd60cc;
     user-select: text;
   }
-
   p.desc {
     font-size: 1.05rem;
     color: #ddd;
@@ -71,7 +64,6 @@
     line-height: 1.5;
     user-select: text;
   }
-
   label {
     display: block;
     font-weight: 700;
@@ -81,7 +73,6 @@
     text-align: right;
     user-select: text;
   }
-
   input[type="text"] {
     width: 100%;
     background: #212a43;
@@ -121,6 +112,7 @@
     user-select: none;
   }
 
+  /* مدرن کردن چک‌باکس */
   label.checkbox-label {
     display: flex;
     align-items: center;
@@ -131,25 +123,37 @@
     cursor: pointer;
     transition: color 0.3s ease;
     user-select: none;
+    gap: 12px;
   }
   label.checkbox-label:hover {
     color: #fff2b8;
   }
-
   input[type="checkbox"] {
-    margin-left: 14px;
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    border-radius: 6px;
-    border: 2.5px solid var(--gold-yellow);
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    border: 2.8px solid var(--gold-yellow);
     background-color: transparent;
+    cursor: pointer;
+    position: relative;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    user-select: none;
   }
   input[type="checkbox"]:checked {
     background-color: var(--gold-yellow);
     border-color: #dbad31;
+  }
+  input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 6px;
+    height: 12px;
+    border: solid var(--dark-navy);
+    border-width: 0 3.5px 3.5px 0;
+    transform: rotate(45deg);
   }
 
   button {
@@ -195,9 +199,25 @@
     box-shadow: inset 0 0 14px #f7bd60aa;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    overflow-wrap: break-word;
   }
   #result:hover {
     background-color: #2a3756;
+  }
+
+  /* پیام خطا */
+  #errorMsg {
+    margin-top: 20px;
+    background-color: var(--error-bg);
+    color: var(--error-red);
+    font-weight: 700;
+    padding: 12px 18px;
+    border-radius: 14px;
+    box-shadow:
+      0 0 12px 0 var(--error-red);
+    user-select: none;
+    text-align: center;
+    display: none;
   }
 
   /* Responsive */
@@ -222,16 +242,16 @@
 </head>
 <body>
   <main class="container" role="main" aria-label="سازنده URL انتقال پیامک SMS.ir">
-    <h1>لینک‌ساز انتقال پیامک‌های دریافتی</h1>
+    <h1>لینک‌ساز انتقال پیامک‌های دریافتی در سامانه</h1>
     <p class="desc">لینک انتقال پیامک دریافتی را به دلخواه با انتخاب متغیرها بسازید.</p>
 
     <label for="baseUrl">آدرس سایت (بدون اسلش آخر):</label>
     <input
       type="text"
       id="baseUrl"
-      value="https://SMS.ir/transfer.php"
+      value="https://SMS.ir"
       aria-describedby="baseUrlHelp"
-      placeholder="https://SMS.ir/transfer.php"
+      placeholder="https://SMS.ir"
       spellcheck="false"
       autocomplete="off"
     />
@@ -252,3 +272,55 @@
       </label>
     </fieldset>
 
+    <button id="generateBtn" aria-label="ساخت لینک انتقال پیامک">ساخت لینک</button>
+
+    <div id="errorMsg" role="alert" aria-live="assertive"></div>
+
+    <div id="result" tabindex="0" role="textbox" aria-readonly="true" aria-label="لینک ساخته شده"></div>
+  </main>
+
+<script>
+  const baseUrlInput = document.getElementById('baseUrl');
+  const checkboxes = ['varFrom', 'varTo', 'varText', 'varDate'].map(id => document.getElementById(id));
+  const generateBtn = document.getElementById('generateBtn');
+  const resultDiv = document.getElementById('result');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function encodeParam(param) {
+    // Encode params as per URL encoding rules (safe)
+    return encodeURIComponent(param);
+  }
+
+  generateBtn.addEventListener('click', () => {
+    errorMsg.style.display = 'none';
+    resultDiv.textContent = '';
+
+    const baseUrl = baseUrlInput.value.trim();
+    if (!baseUrl) {
+      errorMsg.textContent = 'لطفاً آدرس سایت را وارد کنید.';
+      errorMsg.style.display = 'block';
+      baseUrlInput.focus();
+      return;
+    }
+
+    // چک کردن حداقل یک چک‌باکس انتخاب شده باشد
+    const selectedVars = checkboxes.filter(chk => chk.checked);
+    if (selectedVars.length === 0) {
+      errorMsg.textContent = 'حداقل یک متغیر را انتخاب کنید.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // ساخت لینک
+    // پارامترها به شکل ?from={from}&to={to}&text={text}&date={date} قرار میگیرن
+    // فقط پارامترهایی که انتخاب شدند به لینک اضافه میشن
+    const params = [];
+    selectedVars.forEach(chk => {
+      let paramName = chk.id.replace('var', '').toLowerCase();
+      params.push(`${paramName}={` + paramName + `}`);
+    });
+
+    const queryString = params.join('&');
+    // بررسی اینکه اگر baseUrl آخرش اسلش داشت، حذف بشه
+    let cleanBaseUrl = baseUrl;
+    if (cleanBaseUrl.endsWith
