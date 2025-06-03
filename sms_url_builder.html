@@ -128,7 +128,22 @@
 </button>
 <div id="copyMessage" style="margin-top: 0.5rem; color: #f7bd60;"></div>
   <script>
-    function generateURL() {
+    function generateLink() {
+  const domainInput = document.getElementById('domain');
+  const domain = domainInput.value.trim();
+
+  // 👇 بررسی معتبر بودن دامنه
+  const domainPattern = /^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  if (!domain || !domainPattern.test(domain)) {
+    alert("لطفاً یک دامنه معتبر وارد کنید، مثل SMS.ir یا https://example.com");
+    domainInput.focus();
+    return;
+  }
+
+  // ✅ حالا از اینجا به بعد لینک رو بساز
+  // بقیه کد ساخت لینک که خودت قبلاً داشتی
+}
       const domain = document.getElementById("domain").value.trim();
       const errorEl = document.getElementById("error");
       const resultEl = document.getElementById("result");
