@@ -242,85 +242,14 @@
 </head>
 <body>
   <main class="container" role="main" aria-label="سازنده URL انتقال پیامک SMS.ir">
-    <h1>لینک‌ساز انتقال پیامک‌های دریافتی در سامانه</h1>
+    <h1>لینک‌ساز انتقال پیامک‌های دریافتی</h1>
     <p class="desc">لینک انتقال پیامک دریافتی را به دلخواه با انتخاب متغیرها بسازید.</p>
 
     <label for="baseUrl">آدرس سایت (بدون اسلش آخر):</label>
     <input
       type="text"
       id="baseUrl"
-      value="https://SMS.ir"
+      value="http://YourSite/YourController"
       aria-describedby="baseUrlHelp"
-      placeholder="https://SMS.ir"
-      spellcheck="false"
-      autocomplete="off"
-    />
-
-    <fieldset>
-      <legend>انتخاب متغیرها:</legend>
-      <label class="checkbox-label" for="varFrom">
-        <input type="checkbox" id="varFrom" checked /> from (فرستنده پیامک)
-      </label>
-      <label class="checkbox-label" for="varTo">
-        <input type="checkbox" id="varTo" checked /> to (گیرنده پیامک)
-      </label>
-      <label class="checkbox-label" for="varText">
-        <input type="checkbox" id="varText" checked /> text (متن پیامک)
-      </label>
-      <label class="checkbox-label" for="varDate">
-        <input type="checkbox" id="varDate" checked /> date (تاریخ و زمان)
-      </label>
-    </fieldset>
-
-    <button id="generateBtn" aria-label="ساخت لینک انتقال پیامک">ساخت لینک</button>
-
-    <div id="errorMsg" role="alert" aria-live="assertive"></div>
-
-    <div id="result" tabindex="0" role="textbox" aria-readonly="true" aria-label="لینک ساخته شده"></div>
-  </main>
-
-<script>
-  const baseUrlInput = document.getElementById('baseUrl');
-  const checkboxes = ['varFrom', 'varTo', 'varText', 'varDate'].map(id => document.getElementById(id));
-  const generateBtn = document.getElementById('generateBtn');
-  const resultDiv = document.getElementById('result');
-  const errorMsg = document.getElementById('errorMsg');
-
-  function encodeParam(param) {
-    // Encode params as per URL encoding rules (safe)
-    return encodeURIComponent(param);
-  }
-
-  generateBtn.addEventListener('click', () => {
-    errorMsg.style.display = 'none';
-    resultDiv.textContent = '';
-
-    const baseUrl = baseUrlInput.value.trim();
-    if (!baseUrl) {
-      errorMsg.textContent = 'لطفاً آدرس سایت را وارد کنید.';
-      errorMsg.style.display = 'block';
-      baseUrlInput.focus();
-      return;
-    }
-
-    // چک کردن حداقل یک چک‌باکس انتخاب شده باشد
-    const selectedVars = checkboxes.filter(chk => chk.checked);
-    if (selectedVars.length === 0) {
-      errorMsg.textContent = 'حداقل یک متغیر را انتخاب کنید.';
-      errorMsg.style.display = 'block';
-      return;
-    }
-
-    // ساخت لینک
-    // پارامترها به شکل ?from={from}&to={to}&text={text}&date={date} قرار میگیرن
-    // فقط پارامترهایی که انتخاب شدند به لینک اضافه میشن
-    const params = [];
-    selectedVars.forEach(chk => {
-      let paramName = chk.id.replace('var', '').toLowerCase();
-      params.push(`${paramName}={` + paramName + `}`);
-    });
-
-    const queryString = params.join('&');
-    // بررسی اینکه اگر baseUrl آخرش اسلش داشت، حذف بشه
-    let cleanBaseUrl = baseUrl;
-    if (cleanBaseUrl.endsWith
+      placeholder="http://YourSite/YourController"
+      spellcheck="false
