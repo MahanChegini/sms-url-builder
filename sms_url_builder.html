@@ -7,8 +7,7 @@
 <style>
   @font-face {
     font-family: 'Yekan Bakh';
-    src: url('fonts/YekanBakh.woff2') format('woff2'),
-         url('fonts/YekanBakh.woff') format('woff');
+    src: local('Yekan Bakh'), url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css') format('woff2');
     font-weight: 400;
     font-style: normal;
   }
@@ -112,7 +111,7 @@
     user-select: none;
   }
 
-  /* مدرن کردن چک‌باکس */
+  /* چک‌باکس مدرن */
   label.checkbox-label {
     display: flex;
     align-items: center;
@@ -242,7 +241,7 @@
 </head>
 <body>
   <main class="container" role="main" aria-label="سازنده URL انتقال پیامک SMS.ir">
-    <h1>لینک‌ساز انتقال پیامک‌های دریافتی</h1>
+    <h1>سازنده URL انتقال پیامک</h1>
     <p class="desc">لینک انتقال پیامک دریافتی را به دلخواه با انتخاب متغیرها بسازید.</p>
 
     <label for="baseUrl">آدرس سایت (بدون اسلش آخر):</label>
@@ -250,6 +249,46 @@
       type="text"
       id="baseUrl"
       value="http://YourSite/YourController"
-      aria-describedby="baseUrlHelp"
       placeholder="http://YourSite/YourController"
-      spellcheck="false
+      spellcheck="false"
+      aria-describedby="baseUrlHelp"
+    />
+
+    <fieldset>
+      <legend>انتخاب متغیرها برای لینک</legend>
+      <label class="checkbox-label" for="chkFrom">
+        <input type="checkbox" id="chkFrom" name="params" value="from" />
+        متغیر <code>$FROM$</code>
+      </label>
+      <label class="checkbox-label" for="chkTo">
+        <input type="checkbox" id="chkTo" name="params" value="to" />
+        متغیر <code>$TO$</code>
+      </label>
+      <label class="checkbox-label" for="chkText">
+        <input type="checkbox" id="chkText" name="params" value="text" />
+        متغیر <code>$TEXT$</code>
+      </label>
+      <label class="checkbox-label" for="chkDateTime">
+        <input type="checkbox" id="chkDateTime" name="params" value="date" />
+        متغیر <code>$DATETIME$</code>
+      </label>
+    </fieldset>
+
+    <button id="buildBtn" aria-label="ساخت لینک انتقال پیامک">ساخت لینک</button>
+
+    <div id="errorMsg" role="alert" aria-live="assertive"></div>
+    <div id="result" tabindex="0" aria-live="polite" aria-label="لینک ساخته شده"></div>
+  </main>
+
+  <script>
+    const buildBtn = document.getElementById('buildBtn');
+    const baseUrlInput = document.getElementById('baseUrl');
+    const errorMsg = document.getElementById('errorMsg');
+    const result = document.getElementById('result');
+
+    buildBtn.addEventListener('click', () => {
+      errorMsg.style.display = 'none';
+      errorMsg.textContent = '';
+      result.textContent = '';
+
+      const baseUrl =
