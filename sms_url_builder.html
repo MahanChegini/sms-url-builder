@@ -1,23 +1,54 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ساخت لینک انتقال دریافتی</title>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-dark: #131a29;
+      --text-dark: #ffffff;
+      --card-dark: #1f2937;
+      --highlight-dark: #f7bd60;
+      --error-dark: #ff6a6a;
+
+      --bg-light: #f7f7f7;
+      --text-light: #1a1a1a;
+      --card-light: #ffffff;
+      --highlight-light: #f7bd60;
+      --error-light: #d00;
+    }
+
+    html[data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --card: var(--card-dark);
+      --highlight: var(--highlight-dark);
+      --error: var(--error-dark);
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --card: var(--card-light);
+      --highlight: var(--highlight-light);
+      --error: var(--error-light);
+    }
+
     body {
-      background-color: #131a29;
-      color: #fff;
-      font-family: "Vazirmatn", "Yekan Bakh", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Vazirmatn", sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
+      transition: all 0.3s ease;
     }
 
     h1 {
-      color: #f7bd60;
+      color: var(--highlight);
       margin-bottom: 10px;
       font-size: 24px;
     }
@@ -46,7 +77,7 @@
     }
 
     .checkbox-item {
-      background-color: #1f2937;
+      background-color: var(--card);
       padding: 10px;
       border-radius: 8px;
       display: flex;
@@ -57,15 +88,15 @@
     .checkbox-item input[type="checkbox"] {
       width: 18px;
       height: 18px;
-      accent-color: #f7bd60;
+      accent-color: var(--highlight);
     }
 
     .btn {
       margin-top: 30px;
       padding: 12px 24px;
       font-size: 16px;
-      background-color: #f7bd60;
-      color: #131a29;
+      background-color: var(--highlight);
+      color: var(--bg);
       border: none;
       border-radius: 12px;
       cursor: pointer;
@@ -73,27 +104,42 @@
     }
 
     .btn:hover {
-      background-color: #ffcb6b;
+      filter: brightness(1.1);
     }
 
     .result {
       margin-top: 30px;
       padding: 15px;
-      background-color: #1f2937;
-      color: #f7bd60;
+      background-color: var(--card);
+      color: var(--highlight);
       border-radius: 10px;
-      word-break: break-all;
+      word-break: break-word;
       max-width: 500px;
     }
 
     .error {
-      color: #ff6a6a;
+      color: var(--error);
       margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--highlight);
+      color: var(--bg);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
       font-size: 14px;
     }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌓 تغییر تم</button>
+
   <h1>ساخت لینک انتقال دریافتی SMS.ir</h1>
 
   <label for="domain">دامنه شما (مثال: SMS.ir):</label>
@@ -122,73 +168,63 @@
 
   <div id="error" class="error"></div>
   <div id="result" class="result" style="display: none;"></div>
-<!-- دکمه کپی و پیام موفقیت -->
-<button id="copyButton" style="display:none; margin-top: 1rem; padding: 10px 20px; background-color: #f7bd60; color: #131a29; border: none; border-radius: 8px; cursor: pointer;">
-  📋 کپی لینک
-</button>
-<div id="copyMessage" style="margin-top: 0.5rem; color: #f7bd60;"></div>
+
+  <button id="copyButton" style="display:none; margin-top: 1rem; padding: 10px 20px; background-color: var(--highlight); color: var(--bg); border: none; border-radius: 8px; cursor: pointer;">
+    📋 کپی لینک
+  </button>
+  <div id="copyMessage" style="margin-top: 0.5rem; color: var(--highlight);"></div>
+
   <script>
-  function generateLink() {
-  const domain = document.getElementById("domain").value.trim();
-  const errorEl = document.getElementById("error");
-  const resultEl = document.getElementById("result");
-  const copyBtn = document.getElementById("copyButton");
-  const copyMsg = document.getElementById("copyMessage");
+    function generateLink() {
+      const domain = document.getElementById("domain").value.trim();
+      const errorEl = document.getElementById("error");
+      const resultEl = document.getElementById("result");
+      const copyBtn = document.getElementById("copyButton");
+      const copyMsg = document.getElementById("copyMessage");
 
-  // پاک کردن خطا و خروجی قبلی
-  errorEl.textContent = "";
-  resultEl.style.display = "none";
-  copyBtn.style.display = "none";
-  copyMsg.textContent = "";
+      errorEl.textContent = "";
+      resultEl.style.display = "none";
+      copyBtn.style.display = "none";
+      copyMsg.textContent = "";
 
-  // بررسی وجود دامنه
-  if (!domain) {
-    errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
-    return;
-  }
+      if (!domain) {
+        errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
+        return;
+      }
 
-  // بررسی صحت دامنه با regex استاندارد
-  // دامنه باید شامل حروف، اعداد، خط تیره، نقطه باشد
-  // نباید با خط تیره شروع یا پایان یابد
-  // حداقل یک نقطه برای پسوند داشته باشد (مثل example.com)
-  const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]+(\.[A-Za-z]{2,})+$/i;
-  if (!domainPattern.test(domain)) {
-    errorEl.textContent = "دامنه وارد شده معتبر نیست. لطفاً دامنه‌ای مثل SMS.ir وارد کنید.";
-    return;
-  }
+      const params = [];
+      if (document.getElementById("from").checked) params.push("from=$FROM$");
+      if (document.getElementById("to").checked) params.push("to=$TO$");
+      if (document.getElementById("text").checked) params.push("text=$TEXT$");
+      if (document.getElementById("date").checked) params.push("date=$DATETIME$");
 
-  // جمع‌آوری پارامترهای انتخاب شده
-  const params = [];
-  if (document.getElementById("from").checked) params.push("from=$FROM$");
-  if (document.getElementById("to").checked) params.push("to=$TO$");
-  if (document.getElementById("text").checked) params.push("text=$TEXT$");
-  if (document.getElementById("date").checked) params.push("date=$DATETIME$");
+      if (params.length === 0) {
+        errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
+        return;
+      }
 
-  // اگر هیچ چک‌باکسی انتخاب نشده باشد، خطا بده
-  if (params.length === 0) {
-    errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
-    return;
-  }
+      const query = params.join("&");
+      const fullURL = `https://${domain}?${query}`;
 
-  // ساخت رشته کوئری
-  const query = params.join("&");
-  // ساخت URL کامل
-  const fullURL = `https://${domain}?${query}`;
+      resultEl.textContent = fullURL;
+      resultEl.style.display = "block";
 
-  // نمایش لینک ساخته شده
-  resultEl.textContent = fullURL;
-  resultEl.style.display = "block";
+      copyBtn.style.display = "inline-block";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(fullURL).then(() => {
+          copyMsg.textContent = "✅ لینک با موفقیت کپی شد!";
+          setTimeout(() => {
+            copyMsg.textContent = "";
+          }, 3000);
+        });
+      };
+    }
 
-  // نمایش دکمه کپی و اختصاص عملکرد به آن
-  copyBtn.style.display = "inline-block";
-  copyBtn.onclick = () => {
-    navigator.clipboard.writeText(fullURL).then(() => {
-      copyMsg.textContent = "✅ لینک با موفقیت کپی شد!";
-      setTimeout(() => {
-        copyMsg.textContent = "";
-      }, 3000);
-    });
-  };
-}
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+    }
+  </script>
 </body>
 </html>
