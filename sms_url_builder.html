@@ -88,6 +88,7 @@
   input[type="text"]::placeholder {
     color: #c4b776;
     font-weight: 500;
+    user-select: none;
   }
   input[type="text"]:focus {
     border-color: #fff176;
@@ -248,47 +249,59 @@
     <input
       type="text"
       id="baseUrl"
-      value="http://YourSite/YourController"
-      placeholder="http://YourSite/YourController"
+      placeholder="مثال: SMS.ir"
       spellcheck="false"
-      aria-describedby="baseUrlHelp"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
     />
 
     <fieldset>
-      <legend>انتخاب متغیرها برای لینک</legend>
+      <legend>متغیرهای قابل استفاده در لینک</legend>
       <label class="checkbox-label" for="chkFrom">
-        <input type="checkbox" id="chkFrom" name="params" value="from" />
-        متغیر <code>$FROM$</code>
+        <input type="checkbox" id="chkFrom" value="from" />
+        فرستنده (from)
       </label>
       <label class="checkbox-label" for="chkTo">
-        <input type="checkbox" id="chkTo" name="params" value="to" />
-        متغیر <code>$TO$</code>
+        <input type="checkbox" id="chkTo" value="to" />
+        گیرنده (to)
       </label>
       <label class="checkbox-label" for="chkText">
-        <input type="checkbox" id="chkText" name="params" value="text" />
-        متغیر <code>$TEXT$</code>
+        <input type="checkbox" id="chkText" value="text" />
+        متن پیامک (text)
       </label>
       <label class="checkbox-label" for="chkDateTime">
-        <input type="checkbox" id="chkDateTime" name="params" value="date" />
-        متغیر <code>$DATETIME$</code>
+        <input type="checkbox" id="chkDateTime" value="date" />
+        تاریخ و زمان (date)
       </label>
     </fieldset>
 
-    <button id="buildBtn" aria-label="ساخت لینک انتقال پیامک">ساخت لینک</button>
+    <button id="buildLinkBtn" aria-label="ساخت لینک انتقال">ساخت لینک</button>
 
-    <div id="errorMsg" role="alert" aria-live="assertive"></div>
+    <div id="errorMsg" role="alert"></div>
     <div id="result" tabindex="0" aria-live="polite" aria-label="لینک ساخته شده"></div>
   </main>
 
   <script>
-    const buildBtn = document.getElementById('buildBtn');
+    const buildLinkBtn = document.getElementById('buildLinkBtn');
     const baseUrlInput = document.getElementById('baseUrl');
     const errorMsg = document.getElementById('errorMsg');
     const result = document.getElementById('result');
 
-    buildBtn.addEventListener('click', () => {
+    buildLinkBtn.addEventListener('click', () => {
       errorMsg.style.display = 'none';
-      errorMsg.textContent = '';
       result.textContent = '';
 
-      const baseUrl =
+      const baseUrl = baseUrlInput.value.trim();
+
+      // چک کردن وجود لینک
+      if (!baseUrl) {
+        errorMsg.textContent = '⚠ لطفاً آدرس سایت را وارد کنید.';
+        errorMsg.style.display = 'block';
+        baseUrlInput.focus();
+        return;
+      }
+
+      // گرفتن چک‌باکس‌های انتخاب شده
+      const checkedBoxes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+      if (checkedBoxes.length === 
