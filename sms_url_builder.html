@@ -175,56 +175,97 @@
   <div id="copyMessage" style="margin-top: 0.5rem; color: var(--highlight);"></div>
 
   <script>
-    function generateLink() {
-      const domain = document.getElementById("domain").value.trim();
-      const errorEl = document.getElementById("error");
-      const resultEl = document.getElementById("result");
-      const copyBtn = document.getElementById("copyButton");
-      const copyMsg = document.getElementById("copyMessage");
+  function generateLink() {
+    const domainInput = document.getElementById("domain");
+    const domain = domainInput.value.trim();
+    const errorEl = document.getElementById("error");
+    const resultEl = document.getElementById("result");
+    const copyBtn = document.getElementById("copyButton");
+    const copyMsg = document.getElementById("copyMessage");
 
-      errorEl.textContent = "";
-      resultEl.style.display = "none";
-      copyBtn.style.display = "none";
-      copyMsg.textContent = "";
+    errorEl.textContent = "";
+    resultEl.style.display = "none";
+    copyBtn.style.display = "none";
+    copyMsg.textContent = "";
 
-      if (!domain) {
-        errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
-        return;
-      }
+    // بررسی ساختار دامنه با RegEx
+    const domainPattern = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,}$/;
+    const isValidDomain = domainPattern.test(domain);
 
-      const params = [];
-      if (document.getElementById("from").checked) params.push("from=$FROM$");
-      if (document.getElementById("to").checked) params.push("to=$TO$");
-      if (document.getElementById("text").checked) params.push("text=$TEXT$");
-      if (document.getElementById("date").checked) params.push("date=$DATETIME$");
+    // افزودن یا حذف آیکون وضعیت اعتبار
+    domainInput.style.paddingRight = "2rem";
+    const existingIcon = document.getElementById("domainIcon");
+    if (existingIcon) existingIcon.remove();
 
-      if (params.length === 0) {
-        errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
-        return;
-      }
+    const icon = document.createElement("span");
+    icon.id = "domainIcon";
+    icon.textContent = isValidDomain ? "✅" : "❌";
+    icon.style.position = "absolute";
+    icon.style.right = "12px";
+    icon.style.top = "52px";
+    icon.style.fontSize = "18px";
+    icon.style.pointerEvents = "none";
+    domainInput.parentElement.style.position = "relative";
+    domainInput.parentElement.appendChild(icon);
 
-      const query = params.join("&");
-      const fullURL = `https://${domain}?${query}`;
+    if (!domain) {
+      errorEl.textContent = "لطفاً دامنه خود را وارد کنید.";
+      return;
+    }
 
-      resultEl.textContent = fullURL;
-      resultEl.style.display = "block";
+    if (!isValidDomain) {
+      errorEl.textContent = "دامنه وارد شده معتبر نیست.";
+      return;
+    }
 
-      copyBtn.style.display = "inline-block";
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(fullURL).then(() => {
-          copyMsg.textContent = "✅ لینک با موفقیت کپی شد!";
-          setTimeout(() => {
-            copyMsg.textContent = "";
-          }, 3000);
+    const params = [];
+    if (document.getElementById("from").checked) params.push("from=$FROM$");
+    if (document.getElementById("to").checked) params.push("to=$TO$");
+    if (document.getElementById("text").checked) params.push("text=$TEXT$");
+    if (document.getElementById("date").checked) params.push("date=$DATETIME$");
+
+    if (params.length === 0) {
+      errorEl.textContent = "لطفاً حداقل یک متغیر را انتخاب کنید.";
+      return;
+    }
+
+    const query = params.join("&");
+    const fullURL = `https://${domain}?${query}`;
+
+    resultEl.textContent = fullURL;
+    resultEl.style.display = "block";
+
+    // دکمه کپی
+    copyBtn.style.display = "inline-block";
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(fullURL).then(() => {
+        copyMsg.textContent = "✅ لینک با موفقیت کپی شد!";
+        setTimeout(() => (copyMsg.textContent = ""), 3000);
+      });
+    };
+
+    // اشتراک‌گذاری موبایلی
+    if (navigator.share) {
+      const shareBtn = document.createElement("button");
+      shareBtn.textContent = "📤 اشتراک‌گذاری";
+      shareBtn.className = "btn";
+      shareBtn.style.marginTop = "10px";
+      shareBtn.onclick = () => {
+        navigator.share({
+          title: "لینک انتقال دریافتی",
+          text: "لینک ساخته‌شده برای دریافت پیامک:",
+          url: fullURL,
         });
       };
+      resultEl.appendChild(shareBtn);
     }
+  }
 
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  </script>
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+  }
+</script>
 </body>
 </html>
